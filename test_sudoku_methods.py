@@ -22,17 +22,15 @@ class TestSudokuMethods(unittest.TestCase):
     def test_protected_cell(self):
         s = sudoku.Sudoku()
         s.protected_cell[0] = 1
-        #s.board[0][0] = '5'
         with self.assertRaises(sudoku.NonEmptyCell):
             s.place_digit(0,0,'1')
 
     def test_place_number(self):
-        s = sudoku.Sudoku()
-        s.board[0][0] = s.EMPTY
+        s = sudoku.Sudoku(test=True)
         cp = copy.deepcopy(s.board)
-        s.place_digit(0,0,'4')
+        s.place_digit(2,2,'3')
         self.assertFalse(cp == s.board)
-        s.board[0][0] = cp[0][0]
+        s.board[2][2] = cp[2][2]
         self.assertTrue(cp == s.board) 
 
 if __name__ == '__main__':

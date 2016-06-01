@@ -12,10 +12,11 @@ class Status(Enum):
  """   
 class Sudoku(object):
     """ This class represent the sodoku game object."""
-    def __init__(self,board_size=9,level = 1):
+    def __init__(self,board_size=9,level = 1,test = False):
         self.board_size = board_size
         self.EMPTY = '0'
         self.empties = 0
+        self.test = test
         self.protected_cell = dict()
         self.num_cells = board_size**2
         self.board = []
@@ -51,7 +52,10 @@ class Sudoku(object):
             
     
     def load_board(self):
-        data = SudokuBoard(self.level).data
+        if self.test:
+            data = SudokuBoard(self.level,True).data
+        else:
+            data = SudokuBoard(self.level).data
         for i in range(self.board_size):
             for j in range(self.board_size):
                 if data[i*self.board_size +j]!='0':
@@ -155,14 +159,17 @@ class SudokuSolver(object):
     
 class SudokuBoard(object):
     '''Load board from file'''
-    def __init__(self,level):
+    def __init__(self,level,test=False):
         self.level = level
         self.data = []
+        self.test = test
         self.current = self.load_data()
 
     def load_data(self):
-        #x = random.randint(0,10000)
-        x = 533
+        if not self.test:
+            x = random.randint(0,10000)
+        else:
+            x = 533
         print("Line",x,"will be loaded")
         dfile = open(str(self.level)+".txt","r")
         #naive solution try fseek and ftell
@@ -174,7 +181,7 @@ class SudokuBoard(object):
 if __name__ == '__main__':
     s = Sudoku()
     s.display_board()
-    print(s.empties)
-    print(s.place_digit(2,2,'1'))
-    print(s.empties)
-    s.display_board()
+##    print(s.empties)
+##    print(s.place_digit(2,2,'1'))
+##    print(s.empties)
+##    s.display_board()
