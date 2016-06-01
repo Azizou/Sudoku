@@ -170,16 +170,17 @@ class SudokuBoard(object):
             x = random.randint(0,10000)
         else:
             x = 533
-        print("Line",x,"will be loaded")
         dfile = open(str(self.level)+".txt","r")
         #naive solution try fseek and ftell
-        lines = dfile.readlines()
-        self.data = lines[x][:-1]
+        line_length = len(dfile.readline()) + 1
+        dfile.seek(0)
+        dfile.seek(line_length*x)
+        self.data = dfile.readline()[:-1]
         dfile.close()
         return x
 
 if __name__ == '__main__':
-    s = Sudoku()
+    s = Sudoku(test=True)
     s.display_board()
 ##    print(s.empties)
 ##    print(s.place_digit(2,2,'1'))
