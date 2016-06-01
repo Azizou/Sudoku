@@ -21,7 +21,8 @@ class TestSudokuMethods(unittest.TestCase):
 
     def test_protected_cell(self):
         s = sudoku.Sudoku()
-        s.board[0][0] = '5'
+        s.protected_cell[0] = 1
+        #s.board[0][0] = '5'
         with self.assertRaises(sudoku.NonEmptyCell):
             s.place_digit(0,0,'1')
 
