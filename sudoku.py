@@ -32,24 +32,33 @@ class Sudoku(object):
             self.board.append([self.EMPTY]*self.board_size)
 
     def place_digit(self,x,y,val):
-        #sutil = SudokuUtils(self.board, self.board_size)
-        currVal = self.board[y][x]
         if not self.protected_cell[y*self.board_size +x]:
-            #assert val in list(range(self.board_size +1))
-            #set the val at x y
-            self.board[y][x] = val
-            #Check if move is legal            
-            if self.check(self.get_row(y)) and self.check(self.get_column(x)) and self.check(self.get_block(y,x)):
-                self.empties += 1
-                return True 
-            else:
-            # Undo change
-                
-                self.board[y][x] = currVal
+            if self.board[y][x] == self.EMPTY and val != self.EMPTY:
+                if self.valid_move(x,y,val):
+                    self.empties -= 1
+                    return True
                 return False
+            elif self.board[y][x] != self.EMPTY:
+                if self.valid_move(x,y,val):
+                    return True
+                return False
+            else:
+                self.board[y][x] = val
+                return True
         else:
             raise NonEmptyCell("Cell value cannot be modified")
-            
+
+    def valid_move(self, x, y,val):
+        currVal = self.board[y][x]
+        self.board[y][x] = val
+        if self.check(self.get_row(y)) and self.check(self.get_column(x)) and self.check(self.get_block(y,x)):
+            return True
+        else:
+            self.board[y][x] = currVal
+            return False
+
+    def pdt(self,x,y,val):
+        return self.place_digit(x,y,val)
     
     def load_board(self):
         if self.test:
@@ -77,7 +86,7 @@ class Sudoku(object):
                 print("| " + self.board[i][j], end=' ')
             print("|")
         print("----"*10 + "-")
-        print()
+        print(s.empties)
 
 
     #Throws a value errors for values outside the 0 - 9 range
@@ -92,20 +101,21 @@ class Sudoku(object):
             if int(i)<0 or int(i) > 9:
                 raise ValueError
             if int(i)!= 0 and i in dct.keys():
+                print(i)
                 return False
             else:
                 dct[i] = 1
         return True
 
     def check_rows(self):
-        for row in range(self.board):
+        for row in self.board:
             if not self.check_complete_row(row):
                 return False
         return True
         
-    def cehck_columns(self):
+    def check_columns(self):
         for i in range(self.board_size):
-            if not self.check_complete_row(self.get_column(col)):
+            if not self.check_complete_row(self.get_column(i)):
                 return False
         return True
 
@@ -116,6 +126,11 @@ class Sudoku(object):
                 if not self.check_complete_row(self.get_block(i,j)):
                     return False
         return True
+
+    def check_complete(self):
+        if self.empties == 0:
+            return True
+        return False
 
     def get_row(self, row):
         return self.board[row]
@@ -155,7 +170,28 @@ class SudokuSolver(object):
     def solve(self):
         pass
 
-    
+
+class SudokuGame(object):
+    def __init__(self,board_size, level):
+        self.game = Sudoku(board_size,level)
+        self.mainloop()
+
+    def mainloop(self):
+
+        while 1:
+            self.game.display_board()
+            y,x, val = input("Place a number: row, column, value").split()
+            x = int(x) - 1
+            y = int(y) - 1
+
+            v = self.game.pdt(x,y,val)
+            if not v:
+                print("Invalid move, please try again")
+            if self.game.check_complete():
+                print("Congratulations! You completed the game!")
+                break
+                
+
     
 class SudokuBoard(object):
     '''Load board from file'''
@@ -168,20 +204,61 @@ class SudokuBoard(object):
     def load_data(self):
         if not self.test:
             x = random.randint(0,10000)
-        else:
+        else:#Only for testing
             x = 533
-        print("Line",x,"will be loaded")
         dfile = open(str(self.level)+".txt","r")
         #naive solution try fseek and ftell
-        lines = dfile.readlines()
-        self.data = lines[x][:-1]
+        line_length = len(dfile.readline()) + 1
+        dfile.seek(0)
+        dfile.seek(line_length*x)
+        self.data = dfile.readline()[:-1]
         dfile.close()
         return x
 
 if __name__ == '__main__':
-    s = Sudoku()
+
+    s = Sudoku(test=True)
+
+    s.pdt(8,7,'3')
+    s.pdt(8,4,'4')
+    s.pdt(8,6,'1')
+    s.pdt(7,6,'2')
+    s.pdt(6,5,'2')
+    s.pdt(8,1,'9')
+    s.pdt(8,0,'2')
+    s.pdt(7,0,'4')
+    s.pdt(0,0,'7')
+    s.pdt(2,0,'5')
+    s.pdt(2,2,'3')
+    s.pdt(2,1,'2')
+    s.pdt(0,4,'2')
+    s.pdt(0,3,'5')
+    s.pdt(2,8,'4')
+    s.pdt(6,8,'5')
+    s.pdt(7,1,'5')
+    s.pdt(7,4,'3')
+    s.pdt(7,5,'1')
+    s.pdt(1,8,'3')
+    s.pdt(5,8,'1')
+    s.pdt(4,1,'1')
+    s.pdt(5,6,'7')
+    s.pdt(3,7,'5')
+    s.pdt(4,8,'9')
+    s.pdt(5,2,'2')
+    s.pdt(5,4,'5')
+    s.pdt(4,2,'5')
+    s.pdt(3,2,'4')
+    s.pdt(3,3,'1')
+    s.pdt(4,5,'7')
+    s.pdt(1,7,'2')
+    s.pdt(1,6,'5')
+    s.pdt(1,5,'8')
+    s.pdt(3,4,'8')
+    s.pdt(1,4,'7')
     s.display_board()
-##    print(s.empties)
-##    print(s.place_digit(2,2,'1'))
-##    print(s.empties)
-##    s.display_board()
+
+    ##    print(s.get_block(5,5))
+    ##    print(s.empties)
+    ##    print(s.place_digit(2,2,'1'))
+    ##    print(s.empties)
+    ##    s.display_board()
