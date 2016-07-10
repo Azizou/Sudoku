@@ -1,8 +1,10 @@
+#! /bin/env python3
+
 import unittest
 import sudoku
 import copy
 
-class TestSudokuMethods(unittest.TestCase):
+class TestSudoku(unittest.TestCase):
 
     def test_make_board(self):
         s = sudoku.Sudoku(2)
@@ -16,8 +18,9 @@ class TestSudokuMethods(unittest.TestCase):
 
     def test_load_evel(self):
         level = 2
-        sb = sudoku.SudokuBoard(level)
-        self.assertTrue(len(sb.data)==81,"Board should be 9 x 9 ")
+        sb = sudoku.Sudoku(level=level)
+        #There should be more than 36 empty slots
+        self.assertTrue(sb.empties == 41)
 
     def test_protected_cell(self):
         s = sudoku.Sudoku()
@@ -32,8 +35,12 @@ class TestSudokuMethods(unittest.TestCase):
         self.assertFalse(cp == s.board)
         s.board[2][2] = cp[2][2]
         self.assertTrue(cp == s.board)
-		
+	
+    def test_complete_row(self):
+        pass
+	
     def test_filled_cells(self):
+		"""In level 1 only 36 cells are empty"""
         s = sudoku.Sudoku(test=True)
         self.assertTrue(s.empties == 36)
 

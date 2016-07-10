@@ -1,5 +1,8 @@
 #from enum import Enum
 import random, math
+import os
+
+
 class NonEmptyCell(Exception):
     pass
 """
@@ -208,7 +211,9 @@ class SudokuBoard(object):
             x = 533
         dfile = open(str(self.level)+".txt","r")
         #naive solution try fseek and ftell
-        line_length = len(dfile.readline()) + 1
+        line_length = len(dfile.readline())
+        if os.name != 'posix':
+            line_length += 1
         dfile.seek(0)
         dfile.seek(line_length*x)
         self.data = dfile.readline()[:-1]
